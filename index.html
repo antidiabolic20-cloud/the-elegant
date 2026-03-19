@@ -285,36 +285,32 @@
 <script>
 const CLUB = 'the-elegant';
 
-// Try multiple proxies in order
-const PROXIES = [
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-];
-
+// Direct Chess.com API — no proxy needed from GitHub Pages (different origin = CORS ok via corsproxy)
 async function apiFetch(url) {
-  let lastErr;
-  for (const proxy of PROXIES) {
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+  ];
+  for (const p of proxies) {
     try {
-      const r = await fetch(proxy(url), { signal: AbortSignal.timeout(8000) });
+      const r = await fetch(p, { signal: AbortSignal.timeout(10000) });
       if (!r.ok) continue;
       const text = await r.text();
-      // allorigins wraps in {contents:...}, corsproxy returns raw
       try {
         const j = JSON.parse(text);
-        if (j.contents) return JSON.parse(j.contents);
-        return j;
-      } catch { return JSON.parse(text); }
-    } catch(e) { lastErr = e; }
+        // allorigins wraps response in {contents}
+        return j.contents ? JSON.parse(j.contents) : j;
+      } catch { continue; }
+    } catch { continue; }
   }
-  throw lastErr;
+  throw new Error('All proxies failed for: ' + url);
 }
 
 function fmtNum(n) {
   if (!n && n !== 0) return '—';
-  if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/,'') + 'k';
-  return '' + n;
+  return n >= 1000 ? (n/1000).toFixed(1).replace(/\.0$/,'') + 'k' : '' + n;
 }
-function initials(name) { return name.slice(0,2).toUpperCase(); }
+function initials(n) { return n.slice(0,2).toUpperCase(); }
 
 function togglePlay() {
   const a = document.getElementById('clubsong');
@@ -323,85 +319,99 @@ function togglePlay() {
   else { a.pause(); b.innerHTML = '&#9654;'; b.style.paddingLeft = '2px'; }
 }
 
-// Club info
+// ── Club info ──
 async function loadClub() {
   try {
     const d = await apiFetch(`https://api.chess.com/pub/club/${CLUB}`);
     document.getElementById('stat-members').textContent = fmtNum(d.members_count);
     if (d.created) document.getElementById('stat-year').textContent = new Date(d.created * 1000).getFullYear();
     if (d.members_count) document.getElementById('club-badge').textContent = '★ ELITE CLUB · ' + fmtNum(d.members_count) + ' Members';
-  } catch(e) { console.warn('club info failed', e); }
+  } catch(e) { console.warn('Club info failed:', e.message); }
 }
 
-// Members + ratings
+// ── Members — render each one as it loads, never batch ──
 async function loadMembers() {
+  const list = document.getElementById('member-list');
   try {
     const d = await apiFetch(`https://api.chess.com/pub/club/${CLUB}/members`);
-    const weekly = d.weekly || [];
+    const weekly  = d.weekly  || [];
     const monthly = d.monthly || [];
     document.getElementById('stat-active').textContent = fmtNum(weekly.length);
 
     const seen = new Set(weekly.map(m => m.username));
     const pool = [
       ...weekly.map(m => ({...m, tier:'weekly'})),
-      ...monthly.filter(m => !seen.has(m.username)).slice(0,10).map(m => ({...m, tier:'monthly'}))
-    ].slice(0, 8);
+      ...monthly.filter(m => !seen.has(m.username)).slice(0,5).map(m => ({...m, tier:'monthly'}))
+    ].slice(0, 6); // keep to 6 to minimise requests
 
-    const enriched = await Promise.all(pool.map(async m => {
-      try {
-        const [prof, stats] = await Promise.all([
-          apiFetch(`https://api.chess.com/pub/player/${m.username}`),
-          apiFetch(`https://api.chess.com/pub/player/${m.username}/stats`)
-        ]);
-        const rating = stats.chess_rapid?.last?.rating || stats.chess_blitz?.last?.rating || stats.chess_bullet?.last?.rating || null;
-        return { ...m, avatar: prof.avatar || null, title: prof.title || null, rating };
-      } catch { return { ...m, avatar: null, title: null, rating: null }; }
-    }));
-
-    enriched.sort((a,b) => (b.rating||0) - (a.rating||0));
-
-    const list = document.getElementById('member-list');
+    // Clear skeleton, pre-render name-only rows immediately
     list.innerHTML = '';
-    enriched.forEach((m, i) => {
+    const rows = pool.map((m, i) => {
       const isTop = i === 0;
       const row = document.createElement('a');
       row.href = `https://www.chess.com/member/${m.username}`;
       row.target = '_blank';
       row.className = 'member-row ' + (isTop ? 'top1' : 'rest');
       row.style.cssText = 'text-decoration:none;display:flex;';
+      row.id = 'mrow-' + i;
       row.innerHTML = `
         <span class="member-rank ${isTop?'rank-gold':'rank-dim'}">${i+1}</span>
-        <div class="member-avatar ${isTop?'av-gold':'av-dim'}">${m.avatar ? `<img src="${m.avatar}" alt="${m.username}">` : initials(m.username)}</div>
+        <div class="member-avatar ${isTop?'av-gold':'av-dim'}" id="mav-${i}">${initials(m.username)}</div>
         <div class="member-info">
           <div class="member-name ${isTop?'bold':''}">${m.username}</div>
-          <div class="member-sub">${m.tier==='weekly'?'Active this week':'Monthly active'}</div>
+          <div class="member-sub" id="msub-${i}">${m.tier==='weekly'?'Active this week':'Monthly active'}</div>
         </div>
-        ${m.title ? `<div class="title-badge">${m.title}</div>` : ''}
-        <div class="member-rating">${m.rating || '—'}</div>`;
+        <div class="member-rating" id="mrat-${i}">…</div>`;
       list.appendChild(row);
+      return row;
     });
+
+    // Then fetch each member's stats one-by-one sequentially with a small delay
+    // This avoids hammering the proxy and getting rate-limited
+    for (let i = 0; i < pool.length; i++) {
+      const m = pool[i];
+      try {
+        await new Promise(r => setTimeout(r, i === 0 ? 0 : 400)); // stagger requests
+        const [prof, stats] = await Promise.all([
+          apiFetch(`https://api.chess.com/pub/player/${m.username}`),
+          apiFetch(`https://api.chess.com/pub/player/${m.username}/stats`)
+        ]);
+        const rating = stats.chess_rapid?.last?.rating
+          || stats.chess_blitz?.last?.rating
+          || stats.chess_bullet?.last?.rating
+          || null;
+        // Update the row in place
+        if (prof.avatar) {
+          document.getElementById(`mav-${i}`).innerHTML = `<img src="${prof.avatar}" alt="${m.username}" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+        if (prof.title) {
+          const info = rows[i].querySelector('.member-info');
+          const badge = document.createElement('div');
+          badge.className = 'title-badge';
+          badge.textContent = prof.title;
+          rows[i].insertBefore(badge, rows[i].querySelector(`#mrat-${i}`));
+        }
+        document.getElementById(`mrat-${i}`).textContent = rating || '—';
+      } catch { document.getElementById(`mrat-${i}`).textContent = '—'; }
+    }
+
   } catch(e) {
-    document.getElementById('member-list').innerHTML = '<div class="loading-msg">Could not load members</div>';
+    list.innerHTML = '<div class="loading-msg">Could not load members — ' + e.message + '</div>';
   }
 }
 
-// Tournaments — fetch live from matches API
+// ── Tournaments — 100% live, no fallbacks ──
 async function loadTournaments() {
   const el = document.getElementById('tourn-list');
   try {
     const d = await apiFetch(`https://api.chess.com/pub/club/${CLUB}/matches`);
-    const live     = (d.in_progress || []).slice(0, 3);
-    const upcoming = (d.registered  || []).slice(0, 4);
-    const finished = (d.finished    || []).slice(0, 2);
-
-    const all = [
-      ...live.map(m => ({...m, status:'live'})),
-      ...upcoming.map(m => ({...m, status:'upcoming'})),
-      ...finished.map(m => ({...m, status:'finished'})),
-    ];
+    const live     = (d.in_progress || []).slice(0, 3).map(m => ({...m, status:'live'}));
+    const upcoming = (d.registered  || []).slice(0, 4).map(m => ({...m, status:'upcoming'}));
+    const finished = (d.finished    || []).slice(0, 2).map(m => ({...m, status:'finished'}));
+    const all = [...live, ...upcoming, ...finished];
 
     if (!all.length) {
-      el.innerHTML = '<div class="loading-msg">No matches found</div>';
+      el.innerHTML = '<div class="loading-msg">No matches at the moment</div>';
       return;
     }
 
@@ -409,35 +419,40 @@ async function loadTournaments() {
     all.forEach((m, idx) => {
       const isLive = m.status === 'live';
       const isDone = m.status === 'finished';
-      const opponent = (m.opponent || '').split('/').pop().replace(/-/g,' ') || 'Opponent';
-      const name = m.name || ('vs ' + opponent);
+      const opponent = (m.opponent || '').split('/').pop().replace(/-/g,' ');
+      const name = m.name || (opponent ? 'vs ' + opponent : 'Club Match');
       const tc = m.time_class ? m.time_class.charAt(0).toUpperCase() + m.time_class.slice(1) : '';
-      const dateStr = m.start_time ? new Date(m.start_time * 1000).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
+      const dateStr = m.start_time
+        ? new Date(m.start_time * 1000).toLocaleDateString('en-US', {month:'short', day:'numeric'})
+        : '';
 
-      let badgeHtml = '';
-      if (isLive) badgeHtml = `<div class="tourn-badge tb-live"><span class="live-dot"></span>LIVE</div>`;
-      else if (isDone) {
-        if (m.result === 'win')       badgeHtml = `<div class="tourn-badge tb-green">WIN</div>`;
-        else if (m.result === 'lose') badgeHtml = `<div class="tourn-badge" style="background:rgba(192,83,74,.2);border:1px solid rgba(192,83,74,.4);color:#e07a74;font-size:8px;padding:2px 7px;border-radius:20px;">LOSS</div>`;
-        else                          badgeHtml = `<div class="tourn-badge tb-gold">DRAW</div>`;
+      let badge = '';
+      if (isLive) {
+        badge = `<div class="tourn-badge tb-live"><span class="live-dot"></span>LIVE</div>`;
+      } else if (isDone) {
+        if      (m.result === 'win')  badge = `<div class="tourn-badge tb-green">WIN</div>`;
+        else if (m.result === 'lose') badge = `<div class="tourn-badge" style="background:rgba(192,83,74,.2);border:1px solid rgba(192,83,74,.4);color:#e07a74;font-size:8px;padding:2px 7px;border-radius:20px;letter-spacing:1px;">LOSS</div>`;
+        else                          badge = `<div class="tourn-badge tb-gold">DRAW</div>`;
       } else {
-        badgeHtml = `<div class="tourn-badge tb-gold">${dateStr || 'SOON'}</div>`;
+        badge = `<div class="tourn-badge tb-gold">${dateStr || 'SOON'}</div>`;
       }
 
+      const meta = [tc, opponent ? 'vs ' + opponent : ''].filter(Boolean).join(' · ');
+
       const card = document.createElement(m.url ? 'a' : 'div');
-      if (m.url) { card.href = m.url; card.target = '_blank'; card.style.textDecoration = 'none'; card.style.display = 'block'; }
+      if (m.url) { card.href = m.url; card.target = '_blank'; card.style.cssText = 'text-decoration:none;display:block;'; }
       card.className = `tourn-card ${isLive ? 'tourn-live' : 'tourn-normal'}`;
       if (idx === all.length - 1) card.style.marginBottom = '0';
       card.innerHTML = `
         <div class="tourn-header">
           <div class="${isLive ? 'tourn-name' : 'tourn-name-dim'}">${name}</div>
-          ${badgeHtml}
+          ${badge}
         </div>
-        <div class="tourn-meta">${[tc, opponent ? 'vs ' + opponent : ''].filter(Boolean).join(' · ')}</div>`;
+        ${meta ? `<div class="tourn-meta">${meta}</div>` : ''}`;
       el.appendChild(card);
     });
   } catch(e) {
-    el.innerHTML = '<div class="loading-msg">Could not load tournaments</div>';
+    el.innerHTML = '<div class="loading-msg">Could not load matches — ' + e.message + '</div>';
   }
 }
 

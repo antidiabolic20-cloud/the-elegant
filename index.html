@@ -92,6 +92,10 @@
 
   .empty-msg { font-size: 11px; color: #6a5a3a; text-align: center; padding: 10px 0; }
   .updated-at { font-size: 9px; color: #4a3a2a; text-align: right; margin-top: 4px; letter-spacing: 0.5px; }
+  .new-member-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 12px; margin-bottom: 5px; text-decoration: none; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
+  .new-member-row:last-child { margin-bottom: 0; }
+  .new-badge { font-size: 8px; padding: 1px 6px; border-radius: 10px; background: rgba(90,158,114,.15); border: 1px solid rgba(90,158,114,.35); color: #82c49a; letter-spacing: 1px; flex-shrink: 0; }
+  .new-joined { font-size: 9px; color: #6a5a3a; margin-top: 1px; }
 </style>
 </head>
 <body>
@@ -170,6 +174,11 @@
 
     <div class="section-heading">🏅 Matches</div>
     <div id="tourn-list"><div class="empty-msg">Loading…</div></div>
+
+    <div class="divider"></div>
+
+    <div class="section-heading">✨ The New Elegants</div>
+    <div id="newest-list"><div class="empty-msg">Loading…</div></div>
 
     <div class="divider"></div>
 
@@ -286,6 +295,38 @@ async function loadData() {
       el.appendChild(card);
     });
   } catch(e) { document.getElementById('tourn-list').innerHTML = '<div class="empty-msg">Could not load matches</div>'; }
+
+  // Newest members
+  try {
+    const data = await fetch(`${base}/data/members.json?t=${Date.now()}`).then(r=>r.json());
+    const newest = data.newest || [];
+    const el = document.getElementById('newest-list');
+    if (!newest.length) { el.innerHTML = '<div class="empty-msg">No new members yet</div>'; }
+    else {
+      el.innerHTML = '';
+      newest.forEach((m, i) => {
+        const row = document.createElement('a');
+        row.href = `https://www.chess.com/member/${m.username}`;
+        row.target = '_blank';
+        row.className = 'new-member-row';
+        const av = m.avatar
+          ? `<img src="${m.avatar}" alt="${m.username}" style="width:100%;height:100%;object-fit:cover;">`
+          : m.username.slice(0,2).toUpperCase();
+        const joinedStr = m.joined
+          ? new Date(m.joined * 1000).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})
+          : '';
+        row.innerHTML = `
+          <div class="member-avatar av-dim">${av}</div>
+          <div class="member-info">
+            <div class="member-name">${m.username}</div>
+            <div class="new-joined">${joinedStr ? 'Joined ' + joinedStr : 'New member'}</div>
+          </div>
+          ${m.title ? `<div class="title-badge">${m.title}</div>` : ''}
+          <span class="new-badge">NEW</span>`;
+        el.appendChild(row);
+      });
+    }
+  } catch(e) { document.getElementById('newest-list').innerHTML = '<div class="empty-msg">Could not load new members</div>'; }
 }
 
 loadData();

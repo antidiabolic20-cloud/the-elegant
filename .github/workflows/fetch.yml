@@ -1,0 +1,100 @@
+name: Fetch Chess.com Data
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # every 30 minutes
+  workflow_dispatch:           # allow manual trigger
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch Chess.com data
+        run: |
+          CLUB="the-elegant"
+
+          # Club info
+          curl -s "https://api.chess.com/pub/club/$CLUB" \
+            -H "User-Agent: Mozilla/5.0" \
+            -o data/club.json
+
+          # Members
+          curl -s "https://api.chess.com/pub/club/$CLUB/members" \
+            -H "User-Agent: Mozilla/5.0" \
+            -o data/members_raw.json
+
+          # Matches
+          curl -s "https://api.chess.com/pub/club/$CLUB/matches" \
+            -H "User-Agent: Mozilla/5.0" \
+            -o data/matches.json
+
+          # Extract top 6 weekly+monthly members and fetch their stats
+          python3 << 'PYEOF'
+          import json, urllib.request, time
+
+          with open('data/members_raw.json') as f:
+              members = json.load(f)
+
+          weekly  = members.get('weekly',  [])
+          monthly = members.get('monthly', [])
+
+          seen = set(m['username'] for m in weekly)
+          pool = (
+              [dict(m, tier='weekly')  for m in weekly[:6]] +
+              [dict(m, tier='monthly') for m in monthly if m['username'] not in seen][:4]
+          )[:6]
+
+          enriched = []
+          for m in pool:
+              u = m['username']
+              try:
+                  req = urllib.request.Request(
+                      f"https://api.chess.com/pub/player/{u}",
+                      headers={"User-Agent": "Mozilla/5.0"}
+                  )
+                  prof = json.loads(urllib.request.urlopen(req, timeout=8).read())
+                  req2 = urllib.request.Request(
+                      f"https://api.chess.com/pub/player/{u}/stats",
+                      headers={"User-Agent": "Mozilla/5.0"}
+                  )
+                  stats = json.loads(urllib.request.urlopen(req2, timeout=8).read())
+                  rating = (
+                      (stats.get('chess_rapid',  {}).get('last', {}) or {}).get('rating') or
+                      (stats.get('chess_blitz',  {}).get('last', {}) or {}).get('rating') or
+                      (stats.get('chess_bullet', {}).get('last', {}) or {}).get('rating')
+                  )
+                  enriched.append({
+                      'username': u,
+                      'tier':     m['tier'],
+                      'avatar':   prof.get('avatar'),
+                      'title':    prof.get('title'),
+                      'rating':   rating,
+                      'name':     prof.get('name'),
+                  })
+                  time.sleep(0.3)
+              except Exception as e:
+                  enriched.append({'username': u, 'tier': m['tier'], 'avatar': None, 'title': None, 'rating': None, 'name': None})
+
+          enriched.sort(key=lambda x: x['rating'] or 0, reverse=True)
+
+          output = {
+              'weekly_count': len(weekly),
+              'members': enriched
+          }
+          with open('data/members.json', 'w') as f:
+              json.dump(output, f)
+
+          print(f"Saved {len(enriched)} members")
+          PYEOF
+
+      - name: Commit data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "chore: update chess data $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push

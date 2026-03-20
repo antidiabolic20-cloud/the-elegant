@@ -10,17 +10,23 @@
 
   .card { max-width: 320px; margin: auto; border-radius: 22px; overflow: visible; background: radial-gradient(circle at top,#2a2118,#0d0b09 70%); box-shadow: 0 20px 40px rgba(0,0,0,.9),inset 0 0 40px rgba(255,220,100,.04); padding-bottom: 4px; }
 
+  /* Banner */
   .banner { position: relative; width: 100%; height: 160px; overflow: hidden; border-radius: 22px 22px 0 0; }
   .banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .banner-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom,rgba(0,0,0,.05) 0%,rgba(13,11,9,.97) 100%); }
-  .banner-label { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: rgba(200,164,90,.7); }
+  .banner-meta { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; }
+  .banner-label { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: rgba(200,164,90,.7); }
+  .banner-country { font-size: 13px; margin-bottom: 2px; }
 
   .content { padding: 0 20px 22px; }
 
-  .club-name-wrap { text-align: center; margin-top: 4px; margin-bottom: 14px; }
+  /* Club name */
+  .club-name-wrap { text-align: center; margin-top: 4px; margin-bottom: 6px; }
   .club-name { font-size: 23px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; background: linear-gradient(135deg,#c8a45a,#f0d080,#c8a45a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .club-badge { margin-top: 7px; display: inline-block; padding: 3px 14px; border-radius: 20px; background: rgba(200,164,90,.1); border: 1px solid rgba(200,164,90,.3); font-size: 10px; letter-spacing: 2px; color: #c8a45a; }
+  .club-desc { font-size: 10px; color: #7a6a54; text-align: center; margin-top: 8px; line-height: 1.5; font-style: italic; padding: 0 4px; }
 
+  /* Song */
   .section-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #c8a45a; margin-bottom: 8px; text-align: center; }
   .song-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(200,164,90,.2); box-shadow: 0 4px 16px rgba(0,0,0,.4); margin-bottom: 14px; }
   .song-art { width: 46px; height: 46px; border-radius: 8px; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(200,164,90,.3); }
@@ -33,6 +39,7 @@
   .divider { height: 1px; background: linear-gradient(90deg,transparent,rgba(200,164,90,.4),transparent); margin: 14px 0; }
   .section-heading { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c8a45a; margin-bottom: 10px; }
 
+  /* Events */
   .evt-link { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px; text-decoration: none; margin-bottom: 4px; }
   .evt-link:last-child { margin-bottom: 0; }
   .evt-link-live { background: rgba(192,83,74,.08); border: 1px solid rgba(192,83,74,.3); }
@@ -48,12 +55,23 @@
   .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e07a74; flex-shrink: 0; animation: pulse 1.3s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
+  /* Stats */
   .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
   .stat-cell { background: rgba(255,255,255,.04); border: 1px solid rgba(200,164,90,.15); border-radius: 12px; padding: 10px 6px; text-align: center; }
   .stat-val { font-size: 18px; font-weight: bold; color: #c8a45a; }
   .stat-key { font-size: 9px; color: #6a5a3a; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
 
-  .member-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; margin-bottom: 6px; text-decoration: none; }
+  /* Match record bar */
+  .record-bar { display: flex; border-radius: 8px; overflow: hidden; height: 6px; margin-bottom: 10px; gap: 2px; }
+  .rec-w { background: #5a9e72; border-radius: 3px; }
+  .rec-d { background: #8a6e38; border-radius: 3px; }
+  .rec-l { background: #a03030; border-radius: 3px; }
+  .record-labels { display: flex; gap: 10px; margin-bottom: 14px; }
+  .rec-label { font-size: 9px; display: flex; align-items: center; gap: 4px; }
+  .rec-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Members */
+  .member-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; margin-bottom: 6px; text-decoration: none; }
   .member-row.top1 { background: rgba(200,164,90,.07); border: 1px solid rgba(200,164,90,.2); }
   .member-row.rest { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
   .member-rank { font-size: 11px; width: 14px; text-align: center; flex-shrink: 0; }
@@ -63,12 +81,16 @@
   .av-gold { background: linear-gradient(135deg,#3a2c18,#1e160a); border: 1px solid #c8a45a; color: #c8a45a; }
   .av-dim  { background: linear-gradient(135deg,#2a2018,#141008); border: 1px solid rgba(200,164,90,.3); color: #a08040; }
   .member-info { flex: 1; min-width: 0; }
-  .member-name { font-size: 12px; color: #d0c8b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .member-name { font-size: 11px; color: #d0c8b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .member-name.bold { font-weight: bold; color: #f0e8d0; }
-  .member-sub { font-size: 9px; color: #6a5a3a; margin-top: 1px; }
-  .member-rating { font-size: 14px; font-weight: bold; color: #c8a45a; flex-shrink: 0; }
+  .member-meta { font-size: 9px; color: #6a5a3a; margin-top: 1px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .member-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+  .member-rating { font-size: 13px; font-weight: bold; color: #c8a45a; }
+  .member-peak { font-size: 8px; color: #6a5a3a; }
   .title-badge { font-size: 8px; padding: 1px 5px; background: rgba(200,164,90,.1); border: 1px solid rgba(200,164,90,.25); color: #a08040; letter-spacing: 1px; flex-shrink: 0; border-radius: 3px; }
+  .league-icon { font-size: 10px; }
 
+  /* Tournaments */
   .tourn-card { padding: 10px 12px; border-radius: 12px; margin-bottom: 6px; display: block; text-decoration: none; }
   .tourn-live   { background: rgba(192,83,74,.1);   border: 1px solid rgba(192,83,74,.3); }
   .tourn-normal { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
@@ -82,20 +104,25 @@
   .tb-loss  { background: rgba(192,83,74,.2);   border: 1px solid rgba(192,83,74,.4);  color: #e07a74; }
   .tourn-meta { font-size: 10px; color: #6a5a3a; }
 
+  /* New Elegants */
+  .new-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 12px; margin-bottom: 5px; text-decoration: none; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
+  .new-row:last-child { margin-bottom: 0; }
+  .new-info { flex: 1; min-width: 0; }
+  .new-name { font-size: 11px; color: #d0c8b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .new-joined { font-size: 9px; color: #6a5a3a; margin-top: 1px; }
+  .new-badge { font-size: 8px; padding: 1px 6px; border-radius: 10px; background: rgba(90,158,114,.15); border: 1px solid rgba(90,158,114,.35); color: #82c49a; letter-spacing: 1px; flex-shrink: 0; }
+
+  /* Rules */
   .rules-list { display: flex; flex-direction: column; gap: 6px; }
   .rule-item { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: #a09080; line-height: 1.5; }
   .rule-icon { color: #c8a45a; flex-shrink: 0; }
 
+  /* Footer */
   .footer { text-align: center; }
   .footer-quote { font-size: 11px; font-style: italic; color: #8a7a5a; margin-bottom: 10px; }
   .join-btn { display: inline-block; padding: 8px 24px; border-radius: 20px; background: linear-gradient(135deg,rgba(200,164,90,.2),rgba(200,164,90,.1)); border: 1px solid rgba(200,164,90,.4); color: #c8a45a; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
 
   .empty-msg { font-size: 11px; color: #6a5a3a; text-align: center; padding: 10px 0; }
-  .updated-at { font-size: 9px; color: #4a3a2a; text-align: right; margin-top: 4px; letter-spacing: 0.5px; }
-  .new-member-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 12px; margin-bottom: 5px; text-decoration: none; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); }
-  .new-member-row:last-child { margin-bottom: 0; }
-  .new-badge { font-size: 8px; padding: 1px 6px; border-radius: 10px; background: rgba(90,158,114,.15); border: 1px solid rgba(90,158,114,.35); color: #82c49a; letter-spacing: 1px; flex-shrink: 0; }
-  .new-joined { font-size: 9px; color: #6a5a3a; margin-top: 1px; }
 </style>
 </head>
 <body>
@@ -104,7 +131,10 @@
   <div class="banner">
     <img src="https://images.chesscomfiles.com/uploads/v1/group/913673.f0da935c.160x160o.b4aa5a50d7ca@2x.png" alt="The Elegant">
     <div class="banner-overlay"></div>
-    <div class="banner-label">Chess.com Club</div>
+    <div class="banner-meta">
+      <div class="banner-country" id="club-country"></div>
+      <div class="banner-label">Chess.com Club</div>
+    </div>
   </div>
 
   <div class="content">
@@ -112,6 +142,7 @@
     <div class="club-name-wrap">
       <div class="club-name">THE ELEGANT</div>
       <div class="club-badge" id="club-badge">★ ELITE CLUB</div>
+      <div class="club-desc" id="club-desc"></div>
     </div>
 
     <div class="section-label">🎵 Club Song</div>
@@ -140,29 +171,38 @@
         <span class="evt-badge eb-gold">VIEW</span>
       </a>
       <a href="https://www.chess.com/clubs/upcomingevents/the-elegant?type=multi-club-arena" target="_blank" class="evt-link evt-link-dim">
-        <span class="evt-name-dim">Multi-Club Arena</span>
-        <span class="eb-arr">&#8594;</span>
+        <span class="evt-name-dim">Multi-Club Arena</span><span class="eb-arr">&#8594;</span>
       </a>
       <a href="https://www.chess.com/clubs/upcomingevents/the-elegant?type=club-arena" target="_blank" class="evt-link evt-link-dim">
-        <span class="evt-name-dim">Club Arena</span>
-        <span class="eb-arr">&#8594;</span>
+        <span class="evt-name-dim">Club Arena</span><span class="eb-arr">&#8594;</span>
       </a>
       <a href="https://www.chess.com/clubs/currentevents/the-elegant?type=vote" target="_blank" class="evt-link evt-link-dim">
-        <span class="evt-name-dim">Vote Chess</span>
-        <span class="eb-arr">&#8594;</span>
+        <span class="evt-name-dim">Vote Chess</span><span class="eb-arr">&#8594;</span>
       </a>
       <a href="https://www.chess.com/clubs/upcomingevents/the-elegant?type=daily" target="_blank" class="evt-link evt-link-dim">
-        <span class="evt-name-dim">Daily Matches</span>
-        <span class="eb-arr">&#8594;</span>
+        <span class="evt-name-dim">Daily Matches</span><span class="eb-arr">&#8594;</span>
       </a>
     </div>
 
     <div class="divider"></div>
 
+    <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-cell"><div class="stat-val" id="stat-members">—</div><div class="stat-key">Members</div></div>
       <div class="stat-cell"><div class="stat-val" id="stat-active">—</div><div class="stat-key">Active/Wk</div></div>
-      <div class="stat-cell"><div class="stat-val" id="stat-year">—</div><div class="stat-key">Est.</div></div>
+      <div class="stat-cell"><div class="stat-val" id="stat-matches">—</div><div class="stat-key">Matches</div></div>
+    </div>
+
+    <!-- Match record bar -->
+    <div class="record-bar" id="record-bar" style="display:none;">
+      <div class="rec-w" id="bar-w"></div>
+      <div class="rec-d" id="bar-d"></div>
+      <div class="rec-l" id="bar-l"></div>
+    </div>
+    <div class="record-labels" id="record-labels" style="display:none;">
+      <span class="rec-label"><span class="rec-dot" style="background:#5a9e72;"></span><span id="lbl-w" style="color:#5a9e72;"></span></span>
+      <span class="rec-label"><span class="rec-dot" style="background:#8a6e38;"></span><span id="lbl-d" style="color:#8a6e38;"></span></span>
+      <span class="rec-label"><span class="rec-dot" style="background:#a03030;"></span><span id="lbl-l" style="color:#a03030;"></span></span>
     </div>
 
     <div class="divider"></div>
@@ -206,34 +246,66 @@ function fmtNum(n) {
   return n >= 1000 ? (n/1000).toFixed(1).replace(/\.0$/,'') + 'k' : '' + n;
 }
 function initials(n) { return n.slice(0,2).toUpperCase(); }
-
 function togglePlay() {
   const a = document.getElementById('clubsong'), b = document.getElementById('playbtn');
   if (a.paused) { a.play(); b.innerHTML='&#9646;&#9646;'; b.style.paddingLeft='0'; }
   else { a.pause(); b.innerHTML='&#9654;'; b.style.paddingLeft='2px'; }
 }
 
-// Load from pre-fetched JSON files in same repo — no CORS issues at all
+function avatar(m) {
+  return m.avatar
+    ? `<img src="${m.avatar}" alt="${m.username}" style="width:100%;height:100%;object-fit:cover;">`
+    : initials(m.username);
+}
+
 async function loadData() {
   const base = window.location.href.replace(/\/[^/]*$/, '');
+  const t = Date.now();
 
-  // Club info
+  // ── Club info ──
   try {
-    const club = await fetch(`${base}/data/club.json?t=${Date.now()}`).then(r=>r.json());
+    const club = await fetch(`${base}/data/club.json?t=${t}`).then(r=>r.json());
     if (club.members_count) {
       document.getElementById('stat-members').textContent = fmtNum(club.members_count);
       document.getElementById('club-badge').textContent = '★ ELITE CLUB · ' + fmtNum(club.members_count) + ' Members';
     }
-    if (club.created) document.getElementById('stat-year').textContent = new Date(club.created * 1000).getFullYear();
+    if (club.country) {
+      const code = club.country.split('/').pop().toUpperCase();
+      if (code.length === 2) {
+        const flag = String.fromCodePoint(...[...code].map(c => c.charCodeAt(0) + 127397));
+        document.getElementById('club-country').textContent = flag;
+      }
+    }
+    if (club.description) {
+      const desc = club.description.replace(/<[^>]+>/g,'').trim();
+      if (desc) document.getElementById('club-desc').textContent = '"' + desc.slice(0,120) + (desc.length>120?'…':'"');
+    }
   } catch(e) {}
 
-  // Members
+  // ── Members + record bar ──
   try {
-    const data = await fetch(`${base}/data/members.json?t=${Date.now()}`).then(r=>r.json());
-    document.getElementById('stat-active').textContent = fmtNum(data.weekly_count);
-    const list = document.getElementById('member-list');
+    const data = await fetch(`${base}/data/members.json?t=${t}`).then(r=>r.json());
+    document.getElementById('stat-active').textContent  = fmtNum(data.weekly_count);
+    document.getElementById('stat-matches').textContent = fmtNum(data.total_matches);
+
+    // Match record bar
+    const w = data.match_wins || 0, d = data.match_draws || 0, l = data.match_losses || 0;
+    const total = w + d + l;
+    if (total > 0) {
+      document.getElementById('record-bar').style.display    = 'flex';
+      document.getElementById('record-labels').style.display = 'flex';
+      document.getElementById('bar-w').style.flex = w;
+      document.getElementById('bar-d').style.flex = d;
+      document.getElementById('bar-l').style.flex = l;
+      document.getElementById('lbl-w').textContent = `${w}W`;
+      document.getElementById('lbl-d').textContent = `${d}D`;
+      document.getElementById('lbl-l').textContent = `${l}L`;
+    }
+
+    // Members
     const members = data.members || [];
-    if (!members.length) { list.innerHTML = '<div class="empty-msg">No member data yet — workflow running soon</div>'; }
+    const list = document.getElementById('member-list');
+    if (!members.length) { list.innerHTML = '<div class="empty-msg">No data yet — run the workflow</div>'; }
     else {
       list.innerHTML = '';
       members.forEach((m, i) => {
@@ -243,39 +315,73 @@ async function loadData() {
         row.target = '_blank';
         row.className = 'member-row ' + (isTop ? 'top1' : 'rest');
         row.style.cssText = 'text-decoration:none;display:flex;';
-        const av = m.avatar ? `<img src="${m.avatar}" alt="${m.username}" style="width:100%;height:100%;object-fit:cover;">` : initials(m.username);
         row.innerHTML = `
           <span class="member-rank ${isTop?'rank-gold':'rank-dim'}">${i+1}</span>
-          <div class="member-avatar ${isTop?'av-gold':'av-dim'}">${av}</div>
+          <div class="member-avatar ${isTop?'av-gold':'av-dim'}">${avatar(m)}</div>
           <div class="member-info">
-            <div class="member-name ${isTop?'bold':''}">${m.username}</div>
-            <div class="member-sub">${m.tier==='weekly'?'Active this week':'Monthly active'}</div>
+            <div class="member-name ${isTop?'bold':''}">${m.country||''} ${m.username}</div>
+            <div class="member-meta">
+              ${m.league_icon ? `<span class="league-icon">${m.league_icon}</span><span>${m.league}</span>` : ''}
+              ${m.last_online ? `<span>· ${m.last_online}</span>` : ''}
+            </div>
           </div>
           ${m.title ? `<div class="title-badge">${m.title}</div>` : ''}
-          <div class="member-rating">${m.rating || '—'}</div>`;
+          <div class="member-right">
+            <div class="member-rating">${m.rating || '—'}</div>
+            ${m.peak ? `<div class="member-peak">peak ${m.peak}</div>` : ''}
+          </div>`;
         list.appendChild(row);
       });
     }
-  } catch(e) { document.getElementById('member-list').innerHTML = '<div class="empty-msg">Could not load members</div>'; }
 
-  // Matches
+    // Newest members
+    const newest = data.newest || [];
+    const nel = document.getElementById('newest-list');
+    if (!newest.length) { nel.innerHTML = '<div class="empty-msg">No new members yet</div>'; }
+    else {
+      nel.innerHTML = '';
+      newest.forEach(m => {
+        const row = document.createElement('a');
+        row.href = `https://www.chess.com/member/${m.username}`;
+        row.target = '_blank';
+        row.className = 'new-row';
+        const joinedStr = m.joined
+          ? new Date(m.joined*1000).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+          : '';
+        row.innerHTML = `
+          <div class="member-avatar av-dim">${avatar(m)}</div>
+          <div class="new-info">
+            <div class="new-name">${m.country||''} ${m.username}${m.title?' · '+m.title:''}</div>
+            <div class="new-joined">${joinedStr ? '📅 Joined '+joinedStr : 'New member'}</div>
+          </div>
+          ${m.league_icon ? `<span style="font-size:14px;">${m.league_icon}</span>` : ''}
+          <span class="new-badge">NEW</span>`;
+        nel.appendChild(row);
+      });
+    }
+  } catch(e) {
+    document.getElementById('member-list').innerHTML = '<div class="empty-msg">Could not load members</div>';
+    document.getElementById('newest-list').innerHTML = '<div class="empty-msg">Could not load new members</div>';
+  }
+
+  // ── Matches ──
   try {
-    const data = await fetch(`${base}/data/matches.json?t=${Date.now()}`).then(r=>r.json());
-    const live     = (data.in_progress || []).slice(0,3).map(m=>({...m,status:'live'}));
-    const upcoming = (data.registered  || []).slice(0,4).map(m=>({...m,status:'upcoming'}));
-    const finished = (data.finished    || []).slice(0,2).map(m=>({...m,status:'finished'}));
-    const all = [...live, ...upcoming, ...finished];
+    const data = await fetch(`${base}/data/matches.json?t=${t}`).then(r=>r.json());
+    const live     = (data.in_progress||[]).slice(0,3).map(m=>({...m,status:'live'}));
+    const upcoming = (data.registered ||[]).slice(0,4).map(m=>({...m,status:'upcoming'}));
+    const finished = (data.finished   ||[]).slice(0,3).map(m=>({...m,status:'finished'}));
+    const all = [...live,...upcoming,...finished];
     const el = document.getElementById('tourn-list');
     if (!all.length) { el.innerHTML = '<div class="empty-msg">No matches at the moment</div>'; return; }
     el.innerHTML = '';
     all.forEach((m, idx) => {
       const isLive = m.status==='live', isDone = m.status==='finished';
       const opponent = (m.opponent||'').split('/').pop().replace(/-/g,' ');
-      const name = m.name || (opponent ? 'vs '+opponent : 'Club Match');
+      const name = m.name || (opponent?'vs '+opponent:'Club Match');
       const tc = m.time_class ? m.time_class.charAt(0).toUpperCase()+m.time_class.slice(1) : '';
       const dateStr = m.start_time ? new Date(m.start_time*1000).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
       let badge = '';
-      if (isLive) badge = `<div class="tourn-badge tb-live"><span class="live-dot"></span>LIVE</div>`;
+      if (isLive)      badge = `<div class="tourn-badge tb-live"><span class="live-dot"></span>LIVE</div>`;
       else if (isDone) {
         if      (m.result==='win')  badge = `<div class="tourn-badge tb-green">WIN</div>`;
         else if (m.result==='lose') badge = `<div class="tourn-badge tb-loss">LOSS</div>`;
@@ -295,38 +401,6 @@ async function loadData() {
       el.appendChild(card);
     });
   } catch(e) { document.getElementById('tourn-list').innerHTML = '<div class="empty-msg">Could not load matches</div>'; }
-
-  // Newest members
-  try {
-    const data = await fetch(`${base}/data/members.json?t=${Date.now()}`).then(r=>r.json());
-    const newest = data.newest || [];
-    const el = document.getElementById('newest-list');
-    if (!newest.length) { el.innerHTML = '<div class="empty-msg">No new members yet</div>'; }
-    else {
-      el.innerHTML = '';
-      newest.forEach((m, i) => {
-        const row = document.createElement('a');
-        row.href = `https://www.chess.com/member/${m.username}`;
-        row.target = '_blank';
-        row.className = 'new-member-row';
-        const av = m.avatar
-          ? `<img src="${m.avatar}" alt="${m.username}" style="width:100%;height:100%;object-fit:cover;">`
-          : m.username.slice(0,2).toUpperCase();
-        const joinedStr = m.joined
-          ? new Date(m.joined * 1000).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})
-          : '';
-        row.innerHTML = `
-          <div class="member-avatar av-dim">${av}</div>
-          <div class="member-info">
-            <div class="member-name">${m.username}</div>
-            <div class="new-joined">${joinedStr ? 'Joined ' + joinedStr : 'New member'}</div>
-          </div>
-          ${m.title ? `<div class="title-badge">${m.title}</div>` : ''}
-          <span class="new-badge">NEW</span>`;
-        el.appendChild(row);
-      });
-    }
-  } catch(e) { document.getElementById('newest-list').innerHTML = '<div class="empty-msg">Could not load new members</div>'; }
 }
 
 loadData();
